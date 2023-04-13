@@ -49,6 +49,15 @@ class User(AbstractBaseUser, PermissionsMixin):
     ]
     username = models.CharField(db_index=True, max_length=255, unique=True)
     email = models.EmailField(db_index=True, unique=True)
+    bio = models.TextField('biography', blank=True)
+    role = models.CharField('role', max_length=11, choices=ROLES_CHOICES, default=USER)
+    confirmation_code = models.CharField(
+        verbose_name='Код для регистрации',
+        max_length=200,
+        editable=False,
+        blank=True,
+        unique=True
+    )
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -58,7 +67,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     objects = UserManager()
 
     def __str__(self):
-        return self.email
+        return self.username
 
     @property
     def token(self):
