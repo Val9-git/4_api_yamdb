@@ -13,15 +13,15 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken
 from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework.views import APIView
 from reviews.models import Category, Genre, Title
 
 from .filters import TitlesFilter
 from .permissions import IsAdmin, ReadOnly  # IsAuthor, IsModerator
-from .serializers import (CategorySerializer, 
-                          GenreSerializer, 
-                          TitlePostSerializer, TitleViewSerializer
-                          )
-
+from .serializers import (CategorySerializer, GenreSerializer, TitlePostSerializer,
+                          TitleViewSerializer, RegistrationSerializer, LoginSerializer,)
+                      
+from .renderers import UserJSONRenderer
 
 User = get_user_model()
 
@@ -34,8 +34,43 @@ class SignUpAPIView(CreateAPIView):
 class TokenObtainView(TokenObtainPairView):
     """Получить токен доступа по коду из письма."""
 
+'''
 
+class RegistrationAPIView(APIView):
+    """
+    Разрешить всем пользователям (аутентифицированным и нет) доступ к данному эндпоинту.
+    """
+    permission_classes = (AllowAny,)
+    renderer_classes = (UserJSONRenderer,)
+    serializer_class = RegistrationSerializer
 
+    def post(self, request):
+        user = request.data.get('user', {})
+        # Cоздание сериализатора, валидация и сохранение 
+        serializer = self.serializer_class(data=user)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    
+
+class LoginAPIView(APIView):
+    """
+    Разрешить аутентифицированному пользователю войти в учетную запись.
+    """
+    permission_classes = (AllowAny,)
+    renderer_classes = (UserJSONRenderer,)
+    serializer_class = LoginSerializer
+
+    def post(self, request):
+        user = request.data.get('user', {})
+        serializer = self.serializer_class(data=user)
+        serializer.is_valid(raise_exception=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)    
+   
+    
+'''    
 class ReviewViewSet(viewsets.ModelViewSet):
     """Вьюсет для рецензий."""
 

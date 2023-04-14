@@ -1,4 +1,5 @@
 from django.db import models
+import uuid
 import jwt
 
 from datetime import datetime, timedelta
@@ -56,6 +57,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         max_length=200,
         editable=False,
         blank=True,
+        default=uuid.uuid4,
         unique=True
     )
     is_active = models.BooleanField(default=True)
@@ -80,11 +82,15 @@ class User(AbstractBaseUser, PermissionsMixin):
         return self.username
 
     def _generate_jwt_token(self):
+        """
+        Генерирует токег, в котором хранится идентификатор этого
+        пользователя, срок действия токена составляет 1 день от создания
+        """
         dt = datetime.now() + timedelta(days=1)
 
         token = jwt.encode({
             'id': self.pk,
-            'exp': int(dt.strftime('%s'))
+            'exp': int(dt.strftime('%S'))
         }, settings.SECRET_KEY, algorithm='HS256')
 
-        return token.decode('utf-8')
+        return token
