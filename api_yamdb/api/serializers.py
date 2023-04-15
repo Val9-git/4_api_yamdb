@@ -3,9 +3,11 @@ from rest_framework import serializers
 
 from rest_framework.relations import SlugRelatedField
 from rest_framework.validators import UniqueValidator
+
 from reviews.models import Category,  Genre,  Title,  Review  # , Comment,
 from django.core.exceptions import ValidationError
 from django.shortcuts import get_object_or_404
+
 
 from users.models import User
 
@@ -20,11 +22,13 @@ class UserSerializer(serializers.ModelSerializer):
             UniqueValidator(queryset=User.objects.all())
         ],
         required=True,
+        max_length=150,
     )
     email = serializers.EmailField(
         validators=[
             UniqueValidator(queryset=User.objects.all())
-        ]
+        ],
+        max_length=254,
     )
 
     class Meta:
@@ -46,12 +50,16 @@ class RegisterDataSerializer(serializers.ModelSerializer):
     username = serializers.CharField(
         validators=[
             UniqueValidator(queryset=User.objects.all())
-        ]
+        ],
+        required=True,
+        max_length=150,
     )
     email = serializers.EmailField(
         validators=[
             UniqueValidator(queryset=User.objects.all())
-        ]
+        ],
+        required=True,
+        max_length=254,
     )
 
     def validate_username(self, value):
@@ -60,7 +68,7 @@ class RegisterDataSerializer(serializers.ModelSerializer):
         return value
 
     class Meta:
-        fields = ("username", "email")
+        fields = ("username", "email",)
         model = User
 
 
@@ -113,6 +121,7 @@ class TitlePostSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'year', 'description', 'genre', 'category')
 
 
+
 class ReviewSerializer(serializers.ModelSerializer):
     """Сериализатор для рецензий."""
     title = serializers.SlugRelatedField(
@@ -144,3 +153,4 @@ class ReviewSerializer(serializers.ModelSerializer):
     class Meta:
         fields = '__all__'
         model = Review
+

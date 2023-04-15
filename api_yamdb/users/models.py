@@ -1,3 +1,4 @@
+from django.core.validators import RegexValidator
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 
@@ -19,7 +20,8 @@ class User(AbstractUser):
         verbose_name='Имя пользователя',
         max_length=150,
         null=True,
-        unique=True
+        unique=True,
+        validators=[RegexValidator(r'^[\\w.@+-]+\\z')],
     )
     role = models.CharField(
         verbose_name='Роль',
