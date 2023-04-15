@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from rest_framework.relations import SlugRelatedField
 from rest_framework.validators import UniqueValidator
-from reviews.models import Category,  Genre,  Title  #  Review, Comment,
+from reviews.models import Category, Genre, Title  #  Review, Comment,
 from users.models import User
 
 
@@ -16,11 +16,13 @@ class UserSerializer(serializers.ModelSerializer):
             UniqueValidator(queryset=User.objects.all())
         ],
         required=True,
+        max_length=150,
     )
     email = serializers.EmailField(
         validators=[
             UniqueValidator(queryset=User.objects.all())
-        ]
+        ],
+        max_length=254,
     )
 
     class Meta:
@@ -40,12 +42,16 @@ class RegisterDataSerializer(serializers.ModelSerializer):
     username = serializers.CharField(
         validators=[
             UniqueValidator(queryset=User.objects.all())
-        ]
+        ],
+        required=True,
+        max_length=150,
     )
     email = serializers.EmailField(
         validators=[
             UniqueValidator(queryset=User.objects.all())
-        ]
+        ],
+        required=True,
+        max_length=254,
     )
 
     def validate_username(self, value):
@@ -54,7 +60,7 @@ class RegisterDataSerializer(serializers.ModelSerializer):
         return value
 
     class Meta:
-        fields = ("username", "email")
+        fields = ("username", "email",)
         model = User
 
 class TokenSerializer(serializers.Serializer):
@@ -109,4 +115,5 @@ class TitlePostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Title
         fields = ('id', 'name', 'year', 'description', 'genre', 'category')
-     
+
+      

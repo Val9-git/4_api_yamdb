@@ -2,6 +2,7 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
+from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, mixins, status, viewsets, permissions
 from rest_framework.generics import (CreateAPIView, ListCreateAPIView,
@@ -16,9 +17,10 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 from reviews.models import Category, Genre, Title
+from users.models import User
 
 from .filters import TitlesFilter
-from .permissions import IsAdmin, ReadOnly  # IsAuthor, IsModerator
+from .permissions import IsAdmin, ReadOnly, IsAdminOrReadOnly, IsAdminModeratorOwnerOrReadOnly
 from .serializers import (CategorySerializer, GenreSerializer, TitlePostSerializer,
                           TitleViewSerializer, RegisterDataSerializer,
                           UserSerializer, UserEditSerializer, TokenSerializer,)
@@ -38,6 +40,47 @@ class TokenObtainView(TokenObtainPairView):
 
 '''
 
+
+@api_view(["POST"])
+@permission_classes([permissions.AllowAny])
+def register(request):
+    serializer = RegisterDataSerializer(data=request.data)
+    if serializer.is_valid(raise_exception=True):
+        serializer.save()
+        user = get_object_or_404(
+            User,
+            username=serializer.validated_data["username"]
+        )
+        confirmation_code = default_token_generator.make_token(user)
+        send_mail(
+            subject="YaMDb registration",
+            message=f"Your confirmation code: {confirmation_code}",
+            from_email=None,
+            recipient_list=[user.email],
+        )
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(["POST"])
+@permission_classes([permissions.AllowAny])
+def get_jwt_token(request):
+    serializer = TokenSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+    user = get_object_or_404(
+        User,
+        username=serializer.validated_data["username"]
+    )
+
+    if default_token_generator.check_token(
+        user, serializer.validated_data["confirmation_code"]
+    ):
+        token = AccessToken.for_user(user)
+        return Response({"token": str(token)}, status=status.HTTP_200_OK)
+
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 class UserViewSet(viewsets.ModelViewSet):
     '''Вьюсет для пользователя'''
     lookup_field = "username"
@@ -48,8 +91,8 @@ class UserViewSet(viewsets.ModelViewSet):
 
     @action(
         methods=[
-            "get",
-            "patch",
+            "GET",
+            "PATCH",
         ],
         detail=False,
         url_path="me",
@@ -73,44 +116,7 @@ class UserViewSet(viewsets.ModelViewSet):
         return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)    
 
 
-@api_view(["POST"])
-@permission_classes([permissions.AllowAny])
-def register(request):
-    serializer = RegisterDataSerializer(data=request.data)
-    serializer.is_valid(raise_exception=True)
-    serializer.save()
-    user = get_object_or_404(
-        User,
-        username=serializer.validated_data["username"]
-    )
-    confirmation_code = default_token_generator.make_token(user)
-    send_mail(
-        subject="YaMDb registration",
-        message=f"Your confirmation code: {confirmation_code}",
-        from_email=None,
-        recipient_list=[user.email],
-    )
 
-    return Response(serializer.data, status=status.HTTP_200_OK)
-
-
-@api_view(["POST"])
-@permission_classes([permissions.AllowAny])
-def get_jwt_token(request):
-    serializer = TokenSerializer(data=request.data)
-    serializer.is_valid(raise_exception=True)
-    user = get_object_or_404(
-        User,
-        username=serializer.validated_data["username"]
-    )
-
-    if default_token_generator.check_token(
-        user, serializer.validated_data["confirmation_code"]
-    ):
-        token = AccessToken.for_user(user)
-        return Response({"token": str(token)}, status=status.HTTP_200_OK)
-
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 '''    
 class ReviewViewSet(viewsets.ModelViewSet):

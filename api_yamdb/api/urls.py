@@ -22,11 +22,11 @@ router_api_v1.register(
 )
 router_api_v1.register(
     'users',
-    UserViewSet)
+    UserViewSet
+)
 
 urlpatterns = [
     path('v1/', include(router_api_v1.urls)),
     path('v1/auth/signup/', register, name='register'),
     path('v1/auth/token/', get_jwt_token, name='token')
-
 ]
