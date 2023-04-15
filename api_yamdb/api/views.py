@@ -1,5 +1,5 @@
 # from django.conf import settings
-from django.contrib.auth import get_user_model
+# from django.contrib.auth import get_user_model
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
@@ -18,11 +18,11 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 
-#  delete
+
 from users.models import User
 
 
-from reviews.models import Category, Genre, Title # Review
+from reviews.models import Category, Genre, Title  # , Review
 
 from .filters import TitlesFilter
 from .permissions import IsAdmin, ReadOnly, IsAdminOrReadOnly, IsAdminModeratorOwnerOrReadOnly  # IsAuthor, IsModerator
@@ -32,7 +32,7 @@ from .serializers import (CategorySerializer, GenreSerializer, TitlePostSerializ
                           UserSerializer, UserEditSerializer, TokenSerializer,)
 
 
-User = get_user_model()
+# User = get_user_model()
 
 '''
 class SignUpAPIView(CreateAPIView):
@@ -85,7 +85,6 @@ def get_jwt_token(request):
         return Response({"token": str(token)}, status=status.HTTP_200_OK)
 
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 
 class UserViewSet(viewsets.ModelViewSet):
