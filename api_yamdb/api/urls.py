@@ -6,7 +6,6 @@ from .views import (CategoriesViewSet,  GenresViewSet,
                     TitleViewSet, ReviewViewSet, UserViewSet, get_jwt_token, register)
 
 
-
 router_api_v1 = DefaultRouter()
 
 

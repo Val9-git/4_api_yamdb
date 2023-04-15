@@ -29,8 +29,6 @@ from .permissions import IsAdmin, ReadOnly,  IsAdminModeratorOwnerOrReadOnly  # 
 from .serializers import (CategorySerializer, GenreSerializer, TitlePostSerializer,
                           TitleViewSerializer, ReviewSerializer, RegisterDataSerializer,
                           UserSerializer, UserEditSerializer, TokenSerializer,)
-                      
-
 
 
 User = get_user_model()
@@ -120,6 +118,7 @@ def get_jwt_token(request):
         return Response({"token": str(token)}, status=status.HTTP_200_OK)
 
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 '''    
 class ReviewViewSet(viewsets.ModelViewSet):

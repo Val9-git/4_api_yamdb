@@ -3,7 +3,7 @@ from rest_framework import serializers
 
 from rest_framework.relations import SlugRelatedField
 from rest_framework.validators import UniqueValidator
-from reviews.models import Category,  Genre,  Title,  Review # , Comment,
+from reviews.models import Category,  Genre,  Title,  Review  # , Comment,
 from django.core.exceptions import ValidationError
 from django.shortcuts import get_object_or_404
 
@@ -32,12 +32,14 @@ class UserSerializer(serializers.ModelSerializer):
                   "last_name", "bio", "role")
         model = User
 
+
 class UserEditSerializer(serializers.ModelSerializer):
     class Meta:
         fields = ("username", "email", "first_name",
                   "last_name", "bio", "role")
         model = User
         read_only_fields = ('role',)  
+
 
 class RegisterDataSerializer(serializers.ModelSerializer):
     """ Сериализатор регистрации и создания нового пользователя. """
@@ -65,9 +67,6 @@ class RegisterDataSerializer(serializers.ModelSerializer):
 class TokenSerializer(serializers.Serializer):
     username = serializers.CharField()
     confirmation_code = serializers.CharField()
- 
-
- 
 
 
 class CommentSerializer(serializers.ModelSerializer):
@@ -93,7 +92,7 @@ class TitleViewSerializer(serializers.ModelSerializer):
     category = CategorySerializer(read_only=True)
     genre = GenreSerializer(many=True, read_only=True)
 
-    rating = serializers.IntegerField()
+    rating = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = Title
@@ -145,5 +144,3 @@ class ReviewSerializer(serializers.ModelSerializer):
     class Meta:
         fields = '__all__'
         model = Review
-
-
