@@ -3,30 +3,72 @@ from rest_framework import serializers
 from rest_framework.relations import SlugRelatedField
 from rest_framework.validators import UniqueValidator
 from reviews.models import Category,  Genre,  Title  #  Review, Comment,
+from users.models import User
+
 
 User = get_user_model()
 
-'''
-class SignUpSerializer(serializers.ModelSerializer):
-    """Сериализатор регистрации для user-а."""
 
+class UserSerializer(serializers.ModelSerializer):
+    """Сериализатор обращений к users/."""
+    username = serializers.CharField(
+        validators=[
+            UniqueValidator(queryset=User.objects.all())
+        ],
+        required=True,
+    )
+    email = serializers.EmailField(
+        validators=[
+            UniqueValidator(queryset=User.objects.all())
+        ]
+    )
 
+    class Meta:
+        fields = ("username", "email", "first_name",
+                  "last_name", "bio", "role")
+        model = User
 
-class TokenObtainSerializer(serializers.Serializer):
-    """Сериализатор токена доступа."""
+class UserEditSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields = ("username", "email", "first_name",
+                  "last_name", "bio", "role")
+        model = User
+        read_only_fields = ('role',)  
 
+class RegisterDataSerializer(serializers.ModelSerializer):
+    """ Сериализатор регистрации и создания нового пользователя. """
+    username = serializers.CharField(
+        validators=[
+            UniqueValidator(queryset=User.objects.all())
+        ]
+    )
+    email = serializers.EmailField(
+        validators=[
+            UniqueValidator(queryset=User.objects.all())
+        ]
+    )
 
+    def validate_username(self, value):
+        if value.lower() == "me":
+            raise serializers.ValidationError("Username 'me' is not valid")
+        return value
+
+    class Meta:
+        fields = ("username", "email")
+        model = User
+
+class TokenSerializer(serializers.Serializer):
+    username = serializers.CharField()
+    confirmation_code = serializers.CharField()
+ 
 
 class ReviewSerializer(serializers.ModelSerializer):
     """Сериализатор для рецензий."""
  
 
 
-
 class CommentSerializer(serializers.ModelSerializer):
     """Сериализатор для комментариев."""
-
-'''
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -67,9 +109,4 @@ class TitlePostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Title
         fields = ('id', 'name', 'year', 'description', 'genre', 'category')
-
-'''
-class UserSerializer(serializers.ModelSerializer):
-    """Сериализатор обращений к users/."""
-
-'''
+     
