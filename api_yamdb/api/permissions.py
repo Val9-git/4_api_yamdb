@@ -1,10 +1,10 @@
 from rest_framework import permissions
 from rest_framework.permissions import SAFE_METHODS, BasePermission
+from rest_framework import permissions
 
 '''
 class IsModerator(BasePermission):
     """Позволять доступ только модераторам."""
-    
 '''
 
 class IsAdminModeratorOwnerOrReadOnly(permissions.BasePermission):
@@ -18,7 +18,7 @@ class IsAdminModeratorOwnerOrReadOnly(permissions.BasePermission):
         return (request.method in permissions.SAFE_METHODS
                 or request.user.is_authenticated)
 
-'''
+
 class IsAdmin(BasePermission):
     """Позволять доступ только админам."""
     message = 'Необходимы права администратора.'
@@ -42,10 +42,10 @@ class IsAdmin(permissions.BasePermission):
         return request.user.is_authenticated and (
             request.user.is_admin or request.user.is_superuser)
 
-'''
+
+
 class IsAuthor(BasePermission):
     """Позволять доступ только авторам."""
-    
 '''
 
 
@@ -56,6 +56,7 @@ class ReadOnly(BasePermission):
 
     def has_object_permission(self, request, view, obj):
         return self.has_permission(request, view)
+
     
 
 class IsAdminOrReadOnly(permissions.BasePermission):
@@ -63,3 +64,4 @@ class IsAdminOrReadOnly(permissions.BasePermission):
         return (request.method in permissions.SAFE_METHODS
                 or (request.user.is_authenticated and (
                     request.user.is_admin or request.user.is_superuser)))
+

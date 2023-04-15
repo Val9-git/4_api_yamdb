@@ -3,6 +3,13 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
 from django_filters.rest_framework import DjangoFilterBackend
+
+
+
+
+
+
+
 from rest_framework import filters, mixins, status, viewsets, permissions
 from rest_framework.generics import (CreateAPIView, ListCreateAPIView,
                                      RetrieveUpdateAPIView,
@@ -15,14 +22,15 @@ from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken
 from rest_framework_simplejwt.views import TokenObtainPairView
-from reviews.models import Category, Genre, Title
+from reviews.models import Category, Genre, Title # Review
 
 from .filters import TitlesFilter
-from .permissions import IsAdmin, ReadOnly  # IsAuthor, IsModerator
+from .permissions import IsAdmin, ReadOnly,  IsAdminModeratorOwnerOrReadOnly  # IsAuthor, IsModerator
 from .serializers import (CategorySerializer, GenreSerializer, TitlePostSerializer,
-                          TitleViewSerializer, RegisterDataSerializer,
+                          TitleViewSerializer, ReviewSerializer, RegisterDataSerializer,
                           UserSerializer, UserEditSerializer, TokenSerializer,)
                       
+
 
 
 User = get_user_model()
@@ -37,6 +45,7 @@ class TokenObtainView(TokenObtainPairView):
     """Получить токен доступа по коду из письма."""
 
 '''
+
 
 class UserViewSet(viewsets.ModelViewSet):
     '''Вьюсет для пользователя'''
@@ -118,6 +127,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
 
 
+
 class CommentViewSet(viewsets.ModelViewSet):
     """Вьюсет для комментариев."""
 
@@ -163,6 +173,26 @@ class TitleViewSet(viewsets.ModelViewSet):
         if self.request.method in ('POST', 'PATCH'):
             return TitlePostSerializer
         return TitleViewSerializer
+
+
+class ReviewViewSet(viewsets.ModelViewSet):
+    """Вьюсет для рецензий."""
+
+    serializer_class = ReviewSerializer
+    permission_classes = (IsAdminModeratorOwnerOrReadOnly,)
+
+    def get_queryset(self):
+        title = get_object_or_404(
+            Title,
+            id=self.kwargs.get('title_id'))
+        return title.reviews.all()
+
+    def perform_create(self, serializer):
+        title = get_object_or_404(
+            Title,
+            id=self.kwargs.get('title_id'))
+        serializer.save(author=self.request.user, title=title)
+
 
 '''
 class UsersAPIView(ListCreateAPIView):

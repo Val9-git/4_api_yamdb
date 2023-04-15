@@ -1,8 +1,10 @@
 from django.urls import include, path  # re_path
 from rest_framework.routers import DefaultRouter
 
+
 from .views import (CategoriesViewSet,  GenresViewSet,
-                    TitleViewSet, UserViewSet, get_jwt_token, register)
+                    TitleViewSet, ReviewViewSet, UserViewSet, get_jwt_token, register)
+
 
 
 router_api_v1 = DefaultRouter()
@@ -20,9 +22,19 @@ router_api_v1.register(
     'genres',
     GenresViewSet, basename='genres'
 )
+
+
+router_api_v1.register(
+    r'titles/(?P<title_id>\d+)/reviews',
+    ReviewViewSet,
+    basename='reviews'
+)
+
+
 router_api_v1.register(
     'users',
     UserViewSet)
+
 
 urlpatterns = [
     path('v1/', include(router_api_v1.urls)),
