@@ -6,30 +6,36 @@ from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 
 from rest_framework import filters, mixins, status, viewsets, permissions
-from rest_framework.generics import (CreateAPIView, ListCreateAPIView,
-                                     RetrieveUpdateAPIView,
-                                     RetrieveUpdateDestroyAPIView,
-                                     get_object_or_404)
-from rest_framework.pagination import LimitOffsetPagination
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.generics import (
+    # CreateAPIView, ListCreateAPIView, RetrieveUpdateAPIView,
+    # RetrieveUpdateDestroyAPIView,
+    get_object_or_404
+)
+# from rest_framework.pagination import LimitOffsetPagination
+# from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken
-from rest_framework_simplejwt.views import TokenObtainPairView
+# from rest_framework_simplejwt.views import TokenObtainPairView
 
 
 from users.models import User
 
 
-from reviews.models import Category, Genre, Title  # , Review
+from reviews.models import Category, Genre, Title, Review
 
 from .filters import TitlesFilter
-from .permissions import IsAdmin, ReadOnly, IsAdminOrReadOnly, IsAdminModeratorOwnerOrReadOnly  # IsAuthor, IsModerator
+from .permissions import (IsAdmin, ReadOnly, IsAdminModeratorOwnerOrReadOnly,
+                          #   IsAdminOrReadOnly
+                          )
+# IsAuthor, IsModerator
 
-from .serializers import (CategorySerializer, GenreSerializer, TitlePostSerializer,
-                          TitleViewSerializer, ReviewSerializer, RegisterDataSerializer,
-                          UserSerializer, UserEditSerializer, TokenSerializer,)
+from .serializers import (CategorySerializer, GenreSerializer,
+                          TitlePostSerializer, TitleViewSerializer,
+                          ReviewSerializer, RegisterDataSerializer,
+                          UserSerializer, UserEditSerializer, TokenSerializer,
+                          CommentSerializer)
 
 
 # User = get_user_model()
@@ -44,7 +50,6 @@ class TokenObtainView(TokenObtainPairView):
     """Получить токен доступа по коду из письма."""
 
 '''
-
 
 
 @api_view(["POST"])
@@ -119,23 +124,25 @@ class UserViewSet(viewsets.ModelViewSet):
             serializer.is_valid(raise_exception=True)
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)    
-
-
-
-
-
-'''    
-class ReviewViewSet(viewsets.ModelViewSet):
-    """Вьюсет для рецензий."""
-
-
+        return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
 
 class CommentViewSet(viewsets.ModelViewSet):
     """Вьюсет для комментариев."""
+    serializer_class = CommentSerializer
+    permission_classes = (IsAdminModeratorOwnerOrReadOnly,)
 
-'''
+    def get_queryset(self):
+        review = get_object_or_404(
+            Review,
+            id=self.kwargs.get('review_id'))
+        return review.comments.all()
+
+    def perform_create(self, serializer):
+        review = get_object_or_404(
+            Review,
+            id=self.kwargs.get('review_id'))
+        serializer.save(author=self.request.user, review=review)
 
 
 class CategoriesViewSet(mixins.ListModelMixin,
