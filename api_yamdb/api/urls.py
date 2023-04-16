@@ -2,7 +2,7 @@ from django.urls import include, path  # re_path
 from rest_framework.routers import DefaultRouter
 
 
-from .views import (CategoriesViewSet,  GenresViewSet,
+from .views import (CategoriesViewSet, GenresViewSet,
                     TitleViewSet, ReviewViewSet, UserViewSet, get_jwt_token, register)
 
 
@@ -29,15 +29,11 @@ router_api_v1.register(
     basename='reviews'
 )
 
-
-router_api_v1.register(
-    'users',
-    UserViewSet
-)
+router_api_v1.register(r'users', UserViewSet, basename='users')
 
 
 urlpatterns = [
     path('v1/', include(router_api_v1.urls)),
     path('v1/auth/signup/', register, name='register'),
-    path('v1/auth/token/', get_jwt_token, name='token')
+    path('v1/auth/token/', get_jwt_token, name='token'),
 ]
