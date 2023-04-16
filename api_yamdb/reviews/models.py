@@ -40,15 +40,15 @@ class Title(models.Model):
     year = models.PositiveSmallIntegerField(
         validators=[MaxValueValidator(date.today().year)]
     )
-    description = models.CharField(
-        max_length=250,
-        blank=True, null=True
-    )
     category = models.ForeignKey(
         Category, null=True,
         blank=True,
         on_delete=models.SET_NULL,
         related_name='titles'
+    )
+    description = models.CharField(
+        max_length=250,
+        blank=True, null=True
     )
     genre = models.ManyToManyField(
         Genre,
