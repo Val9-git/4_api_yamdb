@@ -21,7 +21,7 @@ class User(AbstractUser):
         max_length=150,
         null=True,
         unique=True,
-        validators=[RegexValidator(r'^[\\w.@+-]+\\z')],
+        # validators=[RegexValidator(r'^[\\w.@+-]+\\z')],
     )
     role = models.CharField(
         verbose_name='Роль',
