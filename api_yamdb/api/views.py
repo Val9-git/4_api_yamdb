@@ -14,7 +14,7 @@ from rest_framework.generics import (
     get_object_or_404
 )
 # from rest_framework.pagination import LimitOffsetPagination
-# from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.response import Response
@@ -147,13 +147,11 @@ class UserViewSet(viewsets.ModelViewSet):
 
 
 
-class ReviewViewSet(viewsets.ModelViewSet):
-    """Вьюсет для рецензий."""
+# class ReviewViewSet(viewsets.ModelViewSet):
+#     """Вьюсет для рецензий."""
 
 
-
-        return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
-
+#         return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
 
 class CommentViewSet(viewsets.ModelViewSet):
@@ -172,6 +170,7 @@ class CommentViewSet(viewsets.ModelViewSet):
             Review,
             id=self.kwargs.get('review_id'))
         serializer.save(author=self.request.user, review=review)
+
 
 class CategoriesViewSet(mixins.ListModelMixin,
                         mixins.CreateModelMixin,

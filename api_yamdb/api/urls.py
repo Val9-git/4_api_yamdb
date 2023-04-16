@@ -43,8 +43,7 @@ router_api_v1.register(
 #  router_api_v1.register(
 #    'users',
 #    UserViewSet
-)
-
+# )
 
 
 urlpatterns = [
