@@ -1,10 +1,10 @@
-from django.contrib.auth import get_user_model
+# from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
-from rest_framework.relations import SlugRelatedField
+# from rest_framework.relations import SlugRelatedField
 from rest_framework.validators import UniqueValidator
 
-from reviews.models import Category,  Genre,  Title,  Review  # , Comment,
+from reviews.models import Category, Genre, Title, Review, Comment
 from django.core.exceptions import ValidationError
 from django.shortcuts import get_object_or_404
 
@@ -12,7 +12,7 @@ from django.shortcuts import get_object_or_404
 from users.models import User
 
 
-User = get_user_model()
+# User = get_user_model()
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -42,7 +42,7 @@ class UserEditSerializer(serializers.ModelSerializer):
         fields = ("username", "email", "first_name",
                   "last_name", "bio", "role")
         model = User
-        read_only_fields = ('role',)  
+        read_only_fields = ('role',)
 
 
 class RegisterDataSerializer(serializers.ModelSerializer):
@@ -79,6 +79,18 @@ class TokenSerializer(serializers.Serializer):
 
 class CommentSerializer(serializers.ModelSerializer):
     """Сериализатор для комментариев."""
+    review = serializers.SlugRelatedField(
+        slug_field='text',
+        read_only=True
+    )
+    author = serializers.SlugRelatedField(
+        slug_field='username',
+        read_only=True
+    )
+
+    class Meta:
+        fields = '__all__'
+        model = Comment
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -121,7 +133,6 @@ class TitlePostSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'year', 'description', 'genre', 'category')
 
 
-
 class ReviewSerializer(serializers.ModelSerializer):
     """Сериализатор для рецензий."""
     title = serializers.SlugRelatedField(
@@ -153,4 +164,3 @@ class ReviewSerializer(serializers.ModelSerializer):
     class Meta:
         fields = '__all__'
         model = Review
-
