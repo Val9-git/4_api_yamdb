@@ -1,5 +1,5 @@
 
-from django.core.validators import RegexValidator
+# from django.core.validators import RegexValidator
 
 # from django.contrib.auth import get_user_model
 
@@ -18,10 +18,7 @@ from django.shortcuts import get_object_or_404
 from users.models import User
 from .validators import username_validator
 
-
-
 # User = get_user_model()
-
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -40,14 +37,13 @@ class UserSerializer(serializers.ModelSerializer):
         max_length=254,
     )
 
-           
     class Meta:
         fields = ("username", "email", "first_name",
                   "last_name", "bio", "role")
         model = User
 
     def validate_username(self, value):
-       return username_validator(value)
+        return username_validator(value)
 
 
 class UserEditSerializer(serializers.ModelSerializer):
@@ -58,7 +54,14 @@ class UserEditSerializer(serializers.ModelSerializer):
         read_only_fields = ('role',)
 
     def validate_username(self, value):
-        return username_validator(value)    
+        return username_validator(value)
+
+
+class MeSerializer(UserSerializer):
+
+    class Meta(UserSerializer.Meta):
+        read_only_fields = ('role',)
+
 
 '''
 class RegisterDataSerializer(serializers.ModelSerializer):
@@ -77,14 +80,16 @@ class RegisterDataSerializer(serializers.ModelSerializer):
         required=True,
         max_length=254,
     )
-   
+
     class Meta:
         fields = ("username", "email",)
         model = User
 
     def validate_username(self, value):
-       return username_validator(value)    
-'''    
+       return username_validator(value)
+'''
+
+
 class RegisterDataSerializer(serializers.ModelSerializer):
     """ Сериализатор регистрации и создания нового пользователя. """
     username = serializers.CharField(
@@ -95,21 +100,21 @@ class RegisterDataSerializer(serializers.ModelSerializer):
         required=True,
         max_length=254,
     )
-   
+
     class Meta:
         fields = ("username", "email",)
         model = User
 
     def validate_username(self, value):
-       return username_validator(value)     
-      
+        return username_validator(value)
+
 
 class TokenSerializer(serializers.Serializer):
     username = serializers.CharField()
     confirmation_code = serializers.CharField()
 
     def validate_username(self, value):
-        return username_validator(value)    
+        return username_validator(value)
 
 
 class CommentSerializer(serializers.ModelSerializer):
