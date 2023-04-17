@@ -34,7 +34,7 @@ class IsAdmin(BasePermission):
         return self.has_permission(request, view)
 
 
-''' 
+'''
 
 class IsAuthor(BasePermission):
     """Позволять доступ только авторам."""
@@ -56,4 +56,4 @@ class IsAdminOrReadOnly(permissions.BasePermission):
                 or request.user.is_authenticated
                 and request.user.is_admin
                 or request.user.is_superuser
-        )
+                )
