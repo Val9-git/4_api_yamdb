@@ -1,13 +1,6 @@
-
-# from django.core.validators import RegexValidator
-
-# from django.contrib.auth import get_user_model
-
 from rest_framework import serializers
 
-# from rest_framework.relations import SlugRelatedField
 from rest_framework.validators import UniqueValidator
-
 
 from reviews.models import Category, Genre, Title, Review, Comment
 
@@ -17,8 +10,6 @@ from django.shortcuts import get_object_or_404
 
 from users.models import User
 from .validators import username_validator
-
-# User = get_user_model()
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -61,33 +52,6 @@ class MeSerializer(UserSerializer):
 
     class Meta(UserSerializer.Meta):
         read_only_fields = ('role',)
-
-
-'''
-class RegisterDataSerializer(serializers.ModelSerializer):
-    """ Сериализатор регистрации и создания нового пользователя. """
-    username = serializers.CharField(
-        validators=[
-            UniqueValidator(queryset=User.objects.all()),
-        ],
-        required=True,
-        max_length=150,
-    )
-    email = serializers.EmailField(
-        validators=[
-            UniqueValidator(queryset=User.objects.all())
-        ],
-        required=True,
-        max_length=254,
-    )
-
-    class Meta:
-        fields = ("username", "email",)
-        model = User
-
-    def validate_username(self, value):
-       return username_validator(value)
-'''
 
 
 class RegisterDataSerializer(serializers.ModelSerializer):
