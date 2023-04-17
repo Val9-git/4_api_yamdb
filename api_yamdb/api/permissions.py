@@ -1,11 +1,6 @@
 from rest_framework import permissions
 from rest_framework.permissions import SAFE_METHODS, BasePermission
 
-'''
-class IsModerator(BasePermission):
-    """Позволять доступ только модераторам."""
-'''
-
 
 class IsAdminModeratorOwnerOrReadOnly(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
@@ -32,13 +27,6 @@ class IsAdmin(BasePermission):
 
     def has_object_permission(self, request, view, obj):
         return self.has_permission(request, view)
-
-
-'''
-
-class IsAuthor(BasePermission):
-    """Позволять доступ только авторам."""
-'''
 
 
 class ReadOnly(BasePermission):

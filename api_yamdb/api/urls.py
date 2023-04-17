@@ -1,11 +1,10 @@
-from django.urls import include, path  # re_path
+from django.urls import include, path  
 from rest_framework.routers import DefaultRouter
 
 
 from .views import (CategoriesViewSet, GenresViewSet,
                     TitleViewSet, ReviewViewSet, UserViewSet,
                     get_jwt_token, register, CommentViewSet)
-
 
 
 router_api_v1 = DefaultRouter()
@@ -39,11 +38,6 @@ router_api_v1.register(
     CommentViewSet,
     basename='comments'
 )
-
-#  router_api_v1.register(
-#    'users',
-#    UserViewSet
-# )
 
 
 urlpatterns = [

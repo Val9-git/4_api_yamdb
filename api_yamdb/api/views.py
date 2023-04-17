@@ -1,27 +1,16 @@
-# from django.conf import settings
-# from django.contrib.auth import get_user_model
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
 from django.db import IntegrityError
 from django_filters.rest_framework import DjangoFilterBackend
-# import django_filters.rest_framework
 from rest_framework.filters import SearchFilter
-from rest_framework import (filters, mixins, status, viewsets,
-                            # permissions,
-                            )
-from rest_framework.generics import (
-    # CreateAPIView, ListCreateAPIView, RetrieveUpdateAPIView,
-    # RetrieveUpdateDestroyAPIView,
-    get_object_or_404
-)
+from rest_framework import (filters, mixins, status, viewsets,)
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken
-# from rest_framework_simplejwt.views import TokenObtainPairView
 
 from users.models import User
 from django.db.models import Avg
@@ -30,35 +19,13 @@ from django.db.models import Avg
 from reviews.models import Category, Genre, Title, Review
 
 from .filters import TitlesFilter
-from .permissions import (IsAdmin, ReadOnly, IsAdminModeratorOwnerOrReadOnly,
-                          #   IsAdminOrReadOnly
-                          )
-# IsAuthor, IsModerator
-
-
-# from .serializers import (CategorySerializer, GenreSerializer,
-#  TitlePostSerializer, TitleViewSerializer, ReviewSerializer, UserSerializer,
-# UserEditSerializer, TokenSerializer, RegisterDataSerializer)
+from .permissions import (IsAdmin, ReadOnly, IsAdminModeratorOwnerOrReadOnly,)
 
 from .serializers import (CategorySerializer, GenreSerializer,
                           TitlePostSerializer, TitleViewSerializer,
                           ReviewSerializer, RegisterDataSerializer,
                           UserSerializer, TokenSerializer,
                           CommentSerializer, MeSerializer)
-
-
-# User = get_user_model()
-
-'''
-class SignUpAPIView(CreateAPIView):
-    """Создать пользователя и отправить код на почту."""
-
-
-
-class TokenObtainView(TokenObtainPairView):
-    """Получить токен доступа по коду из письма."""
-
-'''
 
 
 @api_view(["POST"])
@@ -115,7 +82,6 @@ class UserViewSet(viewsets.ModelViewSet):
     pagination_class = PageNumberPagination
     permission_classes = (IsAdmin,)
     filter_backends = (SearchFilter,)
-    # filter_backends = [django_filters.rest_framework.DjangoFilterBackend]
     search_fields = ('username',)
     http_method_names = ['get', 'post', 'patch', 'delete']
 
@@ -163,6 +129,7 @@ class CategoriesViewSet(mixins.ListModelMixin,
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     permission_classes = [IsAdmin | ReadOnly]
+    pagination_class = LimitOffsetPagination
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
     lookup_field = 'slug'
@@ -177,6 +144,7 @@ class GenresViewSet(mixins.ListModelMixin,
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
     permission_classes = [IsAdmin | ReadOnly]
+    pagination_class = LimitOffsetPagination
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
     lookup_field = 'slug'
@@ -184,11 +152,11 @@ class GenresViewSet(mixins.ListModelMixin,
 
 class TitleViewSet(viewsets.ModelViewSet):
     """Вьюсет для произведений."""
-    # queryset = Title.objects.all()
     queryset = Title.objects.annotate(
         rating=Avg('reviews__score')
     ).all()
     permission_classes = [IsAdmin | ReadOnly]
+    pagination_class = LimitOffsetPagination
     filter_backends = (DjangoFilterBackend,)
     filterset_class = TitlesFilter
 
@@ -200,9 +168,9 @@ class TitleViewSet(viewsets.ModelViewSet):
 
 class ReviewViewSet(viewsets.ModelViewSet):
     """Вьюсет для рецензий."""
-
     serializer_class = ReviewSerializer
     permission_classes = (IsAdminModeratorOwnerOrReadOnly,)
+    pagination_class = PageNumberPagination
 
     def get_queryset(self):
         title = get_object_or_404(

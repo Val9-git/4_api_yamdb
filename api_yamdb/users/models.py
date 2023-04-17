@@ -1,6 +1,7 @@
-from django.core.validators import RegexValidator
+#  from django.core.validators import RegexValidator
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+
 
 class User(AbstractUser):
     ADMIN = 'admin'
@@ -21,7 +22,6 @@ class User(AbstractUser):
         max_length=150,
         null=True,
         unique=True,
-        # validators=[RegexValidator(r'^[\\w.@+-]+\\z')],
     )
     role = models.CharField(
         verbose_name='Роль',
@@ -56,4 +56,4 @@ class User(AbstractUser):
                 check=~models.Q(username__iexact="me"),
                 name="username_is_not_me"
             )
-        ]   
+        ]
