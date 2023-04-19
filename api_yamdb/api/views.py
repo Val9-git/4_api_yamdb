@@ -1,31 +1,28 @@
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
-from django.shortcuts import get_object_or_404
 from django.db import IntegrityError
+from django.db.models import Avg
+from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework.filters import SearchFilter
-from rest_framework import (filters, mixins, status, viewsets,)
-from rest_framework.pagination import LimitOffsetPagination
-from rest_framework.permissions import AllowAny, IsAuthenticated
-from rest_framework.pagination import PageNumberPagination
+from rest_framework import filters, mixins, status, viewsets
 from rest_framework.decorators import action, api_view, permission_classes
+from rest_framework.filters import SearchFilter
+from rest_framework.pagination import (LimitOffsetPagination,
+                                       PageNumberPagination)
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken
-
+from reviews.models import Category, Genre, Review, Title
 from users.models import User
-from django.db.models import Avg
-
-
-from reviews.models import Category, Genre, Title, Review
 
 from .filters import TitlesFilter
-from .permissions import (IsAdmin, ReadOnly, IsAdminModeratorOwnerOrReadOnly,)
-
-from .serializers import (CategorySerializer, GenreSerializer,
+from .mixins import ModelMixinSet
+from .permissions import IsAdmin, IsAdminModeratorOwnerOrReadOnly, ReadOnly
+from .serializers import (CategorySerializer, CommentSerializer,
+                          GenreSerializer, MeSerializer,
+                          RegisterDataSerializer, ReviewSerializer,
                           TitlePostSerializer, TitleViewSerializer,
-                          ReviewSerializer, RegisterDataSerializer,
-                          UserSerializer, TokenSerializer,
-                          CommentSerializer, MeSerializer)
+                          TokenSerializer, UserSerializer)
 
 
 @api_view(["POST"])
@@ -75,7 +72,7 @@ def get_jwt_token(request):
 
 
 class UserViewSet(viewsets.ModelViewSet):
-    '''Вьюсет для пользователя'''
+    """Вьюсет для пользователя."""
     lookup_field = 'username'
     queryset = User.objects.all()
     serializer_class = UserSerializer
@@ -120,11 +117,7 @@ class CommentViewSet(viewsets.ModelViewSet):
         serializer.save(author=self.request.user, review=review)
 
 
-class CategoriesViewSet(mixins.ListModelMixin,
-                        mixins.CreateModelMixin,
-                        mixins.DestroyModelMixin,
-                        viewsets.GenericViewSet
-                        ):
+class CategoriesViewSet(ModelMixinSet):
     """Вьюсет для Категорий."""
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
@@ -135,11 +128,7 @@ class CategoriesViewSet(mixins.ListModelMixin,
     lookup_field = 'slug'
 
 
-class GenresViewSet(mixins.ListModelMixin,
-                    mixins.CreateModelMixin,
-                    mixins.DestroyModelMixin,
-                    viewsets.GenericViewSet
-                    ):
+class GenresViewSet(ModelMixinSet):
     """Вьюсет для жанров."""
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer

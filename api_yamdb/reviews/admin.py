@@ -23,3 +23,50 @@ class CommentAdmin(admin.ModelAdmin):
     search_fields = ('review',)
     list_filter = ('review',)
     empty_value_display = '-пусто-'
+
+
+class CategoryAdmin(admin.ModelAdmin):
+    list_display = (
+        'name',
+        'slug',
+    )
+    search_fields = ('name',)
+    list_filter = ('name',)
+    empty_value_display = '-пусто-'
+
+
+class GenreAdmin(admin.ModelAdmin):
+    list_display = (
+        'name',
+        'slug',
+    )
+    search_fields = ('name',)
+    list_filter = ('name',)
+    empty_value_display = '-пусто-'
+
+
+class TitleAdmin(admin.ModelAdmin):
+    list_display = (
+        'name',
+        'year',
+        'category',
+        'description',
+    )
+    search_fields = ('name',)
+    list_filter = ('name',)
+    empty_value_display = '-пусто-'
+
+
+class UserAdmin(admin.ModelAdmin):
+    list_display = (
+        'username',
+        'email',
+        'role',
+        'bio',
+        'first_name',
+        'last_name',
+        'confirmation_code',
+    )
+    search_fields = ('username', 'role',)
+    list_filter = ('username',)
+    empty_value_display = '-пусто-'

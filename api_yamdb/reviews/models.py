@@ -10,10 +10,11 @@ class Category(models.Model):
     """Модель категории произведения."""
     name = models.CharField(max_length=256)
     slug = models.SlugField(
-        unique=True, max_length=50
+        unique=True, max_length=50, db_index=True
     )
 
     class Meta:
+        ordering = ('slug',)
         verbose_name = 'Категория'
         verbose_name_plural = 'Категории'
 
@@ -24,16 +25,17 @@ class Category(models.Model):
 class Genre(models.Model):
     """Модель жанра произведения."""
     name = models.CharField(max_length=256)
-    slug = models.SlugField(unique=True)
+    slug = models.SlugField(unique=True, db_index=True)
 
     class Meta:
+        ordering = ('slug',)
         verbose_name = 'Жанр'
         verbose_name_plural = 'Жанры'
 
 
 class Title(models.Model):
     """Модель произведения."""
-    name = models.CharField(max_length=256)
+    name = models.CharField(max_length=256, db_index=True)
     year = models.PositiveSmallIntegerField(
         validators=[MaxValueValidator(date.today().year)]
     )
@@ -54,6 +56,7 @@ class Title(models.Model):
     )
 
     class Meta:
+        ordering = ('category',)
         verbose_name = 'Произведение'
         verbose_name_plural = 'Произведения'
 
@@ -75,8 +78,6 @@ class Review(models.Model):
     title = models.ForeignKey(
         Title,
         on_delete=models.CASCADE,
-        null=False,
-        blank=False,
         related_name='reviews',
         verbose_name='Произведение',
         help_text='Укажите произведение'
@@ -97,7 +98,7 @@ class Review(models.Model):
         verbose_name='Автор',
         help_text='Выбор автора'
     )
-    score = models.IntegerField(
+    score = models.PositiveSmallIntegerField(
         verbose_name='Оценка',
         help_text='Оценка от 1 до 10',
         validators=(
@@ -155,6 +156,7 @@ class Comment(models.Model):
     )
 
     class Meta:
+        ordering = ('pub_date',)
         verbose_name = 'Комментарий'
         verbose_name_plural = 'Комментарии'
 
