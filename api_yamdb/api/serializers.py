@@ -1,12 +1,8 @@
-from rest_framework import serializers
-
-from rest_framework.validators import UniqueValidator
-
-from reviews.models import Category, Genre, Title, Review, Comment
-
 from django.core.exceptions import ValidationError
 from django.shortcuts import get_object_or_404
-
+from rest_framework import serializers
+from rest_framework.validators import UniqueValidator
+from reviews.models import Category, Comment, Genre, Review, Title
 
 from users.models import User
 from .validators import username_validator
@@ -149,7 +145,7 @@ class ReviewSerializer(serializers.ModelSerializer):
     )
 
     def validate_score(self, value):
-        if 0 > value > 10:
+        if not 1 <= value <= 10:
             raise ValidationError('Оценка может быть от 1 до 10!')
         return value
 
